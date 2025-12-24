@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -31,6 +32,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/projects/{project}/members', [ProjectController::class, 'members'])->name('projects.members');
     Route::post('/projects/{project}/members', [ProjectController::class, 'addMember'])->name('projects.addMember');
     Route::delete('/projects/{project}/members/{user}', [ProjectController::class, 'removeMember'])->name('projects.removeMember');
+
+    // team routes
+    Route::get('/projects/{project}/teams', [TeamController::class, 'index'])->name('projects.teams.index');
+    Route::get('/projects/{project}/teams/create', [TeamController::class, 'create'])->name('projects.teams.create');
+    Route::post('/projects/{project}/teams', [TeamController::class, 'store'])->name('projects.teams.store');
+    Route::get('/teams/{team}', [TeamController::class, 'show'])->name('teams.show');
+    Route::get('/teams/{team}/edit', [TeamController::class, 'edit'])->name('teams.edit');
+    Route::put('/teams/{team}', [TeamController::class, 'update'])->name('teams.update');
+    Route::delete('/teams/{team}', [TeamController::class, 'destroy'])->name('teams.destroy');
+    Route::post('/teams/{team}/members', [TeamController::class, 'addMember'])->name('teams.addMember');
+    Route::delete('/teams/{team}/members/{user}', [TeamController::class, 'removeMember'])->name('teams.removeMember');
+
 });
 
 require __DIR__ . '/auth.php';
