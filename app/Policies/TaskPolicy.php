@@ -13,7 +13,8 @@ class TaskPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        // Allow users to view their own tasks and tasks in projects they belong to
+        return true;
     }
 
     /**
@@ -21,7 +22,8 @@ class TaskPolicy
      */
     public function view(User $user, Task $task): bool
     {
-        return false;
+        // Allow the task owner or users in the same project to view the task
+        return $user->id === $task->user_id || $task->project->users->contains($user->id);
     }
 
     /**
@@ -29,7 +31,8 @@ class TaskPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        // Allow users to create tasks if they are members of any project
+        return $user->projects()->exists();
     }
 
     /**
@@ -37,7 +40,8 @@ class TaskPolicy
      */
     public function update(User $user, Task $task): bool
     {
-        return false;
+        // Allow the task owner or project managers/admins to update the task
+        return $user->id === $task->user_id || $task->project->users->contains($user->id);
     }
 
     /**
@@ -45,7 +49,8 @@ class TaskPolicy
      */
     public function delete(User $user, Task $task): bool
     {
-        return false;
+        // Allow the task owner or project managers/admins to delete the task
+        return $user->id === $task->user_id || $task->project->users->contains($user->id);
     }
 
     /**
@@ -53,7 +58,8 @@ class TaskPolicy
      */
     public function restore(User $user, Task $task): bool
     {
-        return false;
+        // Allow the task owner or project managers/admins to restore the task
+        return $user->id === $task->user_id || $task->project->users->contains($user->id);
     }
 
     /**
@@ -61,6 +67,7 @@ class TaskPolicy
      */
     public function forceDelete(User $user, Task $task): bool
     {
-        return false;
+        // Allow the task owner or project managers/admins to permanently delete the task
+        return $user->id === $task->user_id || $task->project->users->contains($user->id);
     }
 }
