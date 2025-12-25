@@ -3,6 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use App\Models\Task;
+use App\Models\User;
+use App\Notifications\TaskAssigned;
+use App\Notifications\TaskStatusChanged;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -35,14 +38,14 @@ class TaskController extends Controller
         $this->authorize('create', Task::class);
 
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'due_date'    => 'nullable|date',
-            'status'      => 'nullable|string|max:50',
+            'due_date' => 'nullable|date',
+            'status' => 'nullable|string|max:50',
         ]);
 
         $project->tasks()->create([
-             ...$validated,
+            ...$validated,
             'user_id' => auth()->id(),
         ]);
 
@@ -68,10 +71,10 @@ class TaskController extends Controller
         $this->authorize('update', $task);
 
         $validated = $request->validate([
-            'title'       => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'due_date'    => 'nullable|date',
-            'status'      => 'nullable|string|max:50',
+            'due_date' => 'nullable|date',
+            'status' => 'nullable|string|max:50',
         ]);
 
         $task->update($validated);
@@ -97,7 +100,11 @@ class TaskController extends Controller
             'user_id' => 'required|exists:users,id',
         ]);
 
-        $task->update($validated);
+        $task->update(['assigned_to' => $validated['user_id']]);
+
+        // Send notification to the assigned user
+        $assignee = User::find($validated['user_id']);
+        $assignee->notify(new TaskAssigned($task->fresh(), auth()->user()));
 
         return response()->json(['message' => 'Task assigned successfully.']);
     }
@@ -110,7 +117,18 @@ class TaskController extends Controller
             'status' => 'required|string|max:50',
         ]);
 
+        $oldStatus = $task->status;
         $task->update($validated);
+
+        // Send notification to assignee if exists
+        if ($task->assignee) {
+            $task->assignee->notify(new TaskStatusChanged($task, $oldStatus, $validated['status'], auth()->user()));
+        }
+
+        // Send notification to creator if different from assignee
+        if ($task->creator->id !== $task->assigned_to && $task->creator->id !== auth()->id()) {
+            $task->creator->notify(new TaskStatusChanged($task, $oldStatus, $validated['status'], auth()->user()));
+        }
 
         return response()->json(['message' => 'Status updated successfully.']);
     }

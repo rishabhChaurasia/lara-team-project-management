@@ -377,7 +377,6 @@ Create a comprehensive team project management system in Laravel with features f
 - Http/Controllers/: All web controllers
 - Http/Requests/: Validation rules for each resource
 - Policies/: ProjectPolicy, TaskPolicy, TeamPolicy, CommentPolicy
-- Services/: ProjectService, TaskService, NotificationService (optional)
 - Notifications/: TaskAssigned, TaskStatusChanged, CommentAdded, DeadlineApproaching
 
 ### Database/
