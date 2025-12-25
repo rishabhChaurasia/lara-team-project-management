@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +56,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/tasks/{task}', [TaskController::class, 'destroy'])->name('projects.tasks.destroy');
     Route::post('/tasks/{task}/assign', [TaskController::class, 'assign'])->name('projects.tasks.assign');
     Route::patch('/tasks/{task}/status', [TaskController::class, 'status'])->name('projects.tasks.status');
+
+    // task comment routes
+    Route::post('/tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('projects.tasks.comments.store');
+    Route::put('/comments/{comment}', [TaskCommentController::class, 'update'])->name('projects.tasks.comments.update');
+    Route::delete('/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('projects.tasks.comments.destroy');
+
+    // // time log route
+    // Route::post('/tasks/{task}/time-logs/start', []);
 });
 
 require __DIR__ . '/auth.php';
