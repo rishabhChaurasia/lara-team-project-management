@@ -67,6 +67,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/tasks/{task}/time-logs/start', [TimeLogController::class, 'start'])->name('projects.tasks.time-logs.start');
     Route::post('/tasks/{task}/time-logs/stop', [TimeLogController::class,'stop'])->name('projects.tasks.time-logs.stop');
     Route::get('/tasks/{task}/time-logs', [TimeLogController::class,'index'])->name('projects.tasks.time-logs.index');
+
+    // invitation routes
+    Route::get('/invitations/{token}', [ProjectController::class, 'showInvitation'])->name('invitations.show');
+    Route::post('/invitations/{token}/accept', [ProjectController::class, 'acceptInvitation'])->name('invitations.accept');
 });
 
 require __DIR__ . '/auth.php';
