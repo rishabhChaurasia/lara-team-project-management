@@ -5,6 +5,7 @@ use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TeamController;
+use App\Http\Controllers\TimeLogController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -63,7 +64,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('projects.tasks.comments.destroy');
 
     // // time log route
-    // Route::post('/tasks/{task}/time-logs/start', []);
+    Route::post('/tasks/{task}/time-logs/start', [TimeLogController::class, 'start'])->name('projects.tasks.time-logs.start');
+    Route::post('/tasks/{task}/time-logs/stop', [TimeLogController::class,'stop'])->name('projects.tasks.time-logs.stop');
+    Route::get('/tasks/{task}/time-logs', [TimeLogController::class,'index'])->name('projects.tasks.time-logs.index');
 });
 
 require __DIR__ . '/auth.php';
